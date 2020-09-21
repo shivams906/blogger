@@ -25,8 +25,21 @@ class BlogTest(LiveServerTestCase):
 
         # She clicks on the add post link
         wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        self.fail("finish the test")
+
+        # She is taken to the add post page
+        wait_for(
+            lambda: self.assertEqual(
+                f"{self.live_server_url}/blogger/add/", self.browser.current_url
+            )
+        )
+
         # She writes in the content and clicks the publish button
+        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
+            50 * f'{50 * "content"}\n'
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.fail("finish the test")
+
         # She is taken to the newly created post's page
 
 

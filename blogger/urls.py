@@ -4,4 +4,5 @@ from blogger import views
 app_name = "blogger"
 urlpatterns = [
     path("", views.index, name="index"),
+    path("add/", views.add, name="add"),
 ]

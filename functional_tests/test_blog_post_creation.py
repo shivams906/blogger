@@ -20,9 +20,12 @@ class BlogTest(LiveServerTestCase):
         # Edith goes to the home page
         self.browser.get(f"{self.live_server_url}/blogger/")
         wait_for(lambda: self.assertIn("Home", self.browser.title))
-        self.fail("finish the test")
+        header = wait_for(lambda: self.browser.find_element_by_tag_name("header"))
+        self.assertIn("blogger", header.text)
 
         # She clicks on the add post link
+        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
+        self.fail("finish the test")
         # She writes in the content and clicks the publish button
         # She is taken to the newly created post's page
 

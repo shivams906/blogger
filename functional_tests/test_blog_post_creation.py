@@ -39,9 +39,17 @@ class BlogTest(LiveServerTestCase):
             50 * f'{50 * "content"}\n'
         )
         wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
-        self.fail("finish the test")
 
         # She is taken to the newly created post's page
+        wait_for(
+            lambda: self.assertEqual(
+                f"{self.live_server_url}/blogger/posts/title/", self.browser.current_url
+            )
+        )
+        wait_for(lambda: self.assertIn("title", self.browser.title))
+        body = wait_for(lambda: self.browser.find_element_by_tag_name("body")).text
+        self.assertIn("title", body)
+        self.assertIn("content", body)
 
 
 def wait_for(function):

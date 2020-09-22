@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from blogger.forms import PostModelForm
+from blogger.models import Post
 
 
 def index(request):
@@ -19,4 +20,5 @@ def add(request):
 
 
 def view_post(request, title):
-    return render(request, "blogger/view_post.html")
+    post = Post.objects.get(title_slug=title)
+    return render(request, "blogger/view_post.html", {"post": post})

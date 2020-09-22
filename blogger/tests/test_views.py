@@ -68,3 +68,13 @@ class PostViewTest(TestCase):
         post = Post.objects.create(title="My title", content="content")
         response = self.client.get(f"/blogger/posts/{post.title_slug}/")
         self.assertTemplateUsed(response, "blogger/view_post.html")
+
+    def test_context_contains_post_object(self):
+        post = Post.objects.create(title="My title", content="content")
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/")
+        self.assertIn("post", response.context)
+
+    def test_context_post_object_is_correct_one(self):
+        post = Post.objects.create(title="My title", content="content")
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/")
+        self.assertEqual(post, response.context["post"])

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}blogger{% endblock %}</title>
+</head>
+
+<body>
+    <header>
+        <a href="{% url 'blogger:add' %}">Add Post</a>
+        <h1>blogger</h1>
+    </header>
+    {% block body %}
+    {% endblock %}
+</body>
+
+</html>

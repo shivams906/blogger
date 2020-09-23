@@ -4,10 +4,10 @@
 Sign Up - blogger
 {% endblock %}
 
-{% block body %}
+{% block main %}
 <form method='post'>
     {{ form.as_p }}
-    <button id="id_sign_up" type="submit">Sign Up</button>
+    <button id="id_signup" type="submit">Sign Up</button>
     {% csrf_token %}
 </form>
 {% endblock %}

@@ -1,21 +1,7 @@
-from selenium import webdriver
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.common.exceptions import WebDriverException
-from django.test import LiveServerTestCase
-import time
-
-MAX_WAIT = 5
+from .base import *
 
 
-class BlogTest(LiveServerTestCase):
-    def setUp(self):
-        self.browser = webdriver.Firefox(
-            firefox_binary=FirefoxBinary("/usr/lib/firefox/firefox")
-        )
-
-    def tearDown(self):
-        self.browser.quit()
-
+class BlogTest(FunctionalTest):
     def test_blog_post_creation(self):
         # Edith goes to the home page
         self.browser.get(f"{self.live_server_url}/blogger/")
@@ -50,14 +36,3 @@ class BlogTest(LiveServerTestCase):
         body = wait_for(lambda: self.browser.find_element_by_tag_name("body")).text
         self.assertIn("title", body)
         self.assertIn("content", body)
-
-
-def wait_for(function):
-    start_time = time.time()
-    while True:
-        try:
-            return function()
-        except WebDriverException as exception:
-            if time.time() - start_time > MAX_WAIT:
-                raise exception
-            time.sleep(0.5)

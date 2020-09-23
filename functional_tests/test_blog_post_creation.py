@@ -36,7 +36,7 @@ class BlogTest(LiveServerTestCase):
         # She writes in the title and content and clicks the publish button
         wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
         wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            50 * f'{50 * "content"}\n'
+            "content"
         )
         wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
 

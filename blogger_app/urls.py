@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from blogger import urls as blogger_urls
+from accounts import urls as account_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("blogger/", include(blogger_urls)),
+    path("accounts/", include(account_urls)),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]

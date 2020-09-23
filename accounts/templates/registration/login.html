@@ -1,0 +1,13 @@
+{% extends 'blogger/base.html' %}
+
+{% block title %}
+Login - Diary
+{% endblock %}
+
+{% block body %}
+<form method="post">
+    {{ form.as_p }}
+    <button id="id_login" type="submit">Login</button>
+    {% csrf_token %}
+</form>
+{% endblock %}

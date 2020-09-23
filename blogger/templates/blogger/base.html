@@ -11,6 +11,13 @@
     <header>
         <a href="{% url 'blogger:add' %}">Add Post</a>
         <h1>blogger</h1>
+        {% if user.is_authenticated %}
+        {{ user.username }}
+        <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Sign Up</a>
+        {% endif %}
     </header>
     {% block body %}
     {% endblock %}

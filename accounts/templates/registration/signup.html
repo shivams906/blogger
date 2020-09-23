@@ -1,0 +1,13 @@
+{% extends 'blogger/base.html' %}
+
+{% block title %}
+Sign Up - blogger
+{% endblock %}
+
+{% block body %}
+<form method='post'>
+    {{ form.as_p }}
+    <button id="id_sign_up" type="submit">Sign Up</button>
+    {% csrf_token %}
+</form>
+{% endblock %}

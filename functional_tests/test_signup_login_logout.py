@@ -2,7 +2,7 @@ from .base import *
 
 
 class RegistrationTest(FunctionalTest):
-    def test_simple_diary_entry(self):
+    def test_signup_login_logout(self):
         # Edith goes to the home page
         self.browser.get(f"{self.live_server_url}/blogger/")
         wait_for(lambda: self.assertIn("blogger", self.browser.title))
@@ -23,7 +23,7 @@ class RegistrationTest(FunctionalTest):
         wait_for(lambda: self.browser.find_element_by_id("id_password2")).send_keys(
             "top_secret"
         )
-        wait_for(lambda: self.browser.find_element_by_id("id_sign_up")).click()
+        wait_for(lambda: self.browser.find_element_by_id("id_signup")).click()
 
         # She is taken to login page on successful signup
         wait_for(lambda: self.assertIn("Login", self.browser.title))

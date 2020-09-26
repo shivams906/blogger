@@ -106,3 +106,36 @@ class HomePageTest(FunctionalTest):
         self.assertIn("title", main_content)
         self.assertIn("content", main_content)
         self.assertIn("by edith123", main_content)
+
+    def test_post_author_links_to_author_page(self):
+        # Edith goes to the home page
+        self.browser.get(f"{self.live_server_url}/blogger/")
+
+        # She signs up and logs in
+        self.signup(username="edith123", password="top_secret")
+        self.login(username="edith123", password="top_secret")
+
+        # She creates a post and returns to home page
+        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
+        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
+        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
+            "content"
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
+
+        # She clicks on the post's author's name (her name)
+        wait_for(lambda: self.browser.find_element_by_link_text("edith123")).click()
+
+        # She is taken to the author's page
+        wait_for(
+            lambda: self.assertEqual(
+                self.browser.current_url,
+                f"{self.live_server_url}/blogger/bloggers/edith123/",
+            )
+        )
+        wait_for(lambda: self.assertIn("edith123's profile", self.browser.title))
+        main_content = wait_for(
+            lambda: self.browser.find_element_by_tag_name("main")
+        ).text
+        self.assertIn("edith123", main_content)

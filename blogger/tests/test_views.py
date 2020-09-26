@@ -138,3 +138,35 @@ class PostViewTest(TestCase):
         )
         response = self.client.get(f"/blogger/posts/{post.title_slug}/")
         self.assertEqual(post, response.context["post"])
+
+
+class AuthorViewTest(TestCase):
+    def test_url_resolves_to_correct_view_function(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        found = resolve(f"/blogger/bloggers/{author.user.username}/")
+        self.assertEqual(found.func, views.view_blogger)
+
+    def test_view_returns_a_valid_response(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
+        self.assertTemplateUsed(response, "blogger/view_blogger.html")
+
+    def test_view_returns_correct_author_object_in_context(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
+        self.assertIn("author", response.context)
+        self.assertEqual(response.context["author"], author)
+
+    def test_invalid_author_name_returns_appropriate_response(self):
+        response = self.client.get(f"/blogger/bloggers/user/")
+        self.assertContains(response, "There is no author by that username")

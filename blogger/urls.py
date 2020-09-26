@@ -6,4 +6,5 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("add/", views.add, name="add"),
     re_path(r"^posts/([\w\d\-]+)/$", views.view_post, name="view_post"),
+    re_path(r"^bloggers/([\w\d\-]+)/$", views.view_blogger, name="view_blogger"),
 ]

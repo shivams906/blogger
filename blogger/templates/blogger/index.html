@@ -5,7 +5,10 @@
 {% block main %}
 <ul>
     {% for post in posts %}
-    <li><a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a> - by {{ post.author }}</li>
+    <li>
+        <a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a>
+        - by
+        <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a></li>
     {% endfor %}
 </ul>
 {% endblock %}

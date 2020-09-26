@@ -1,0 +1,18 @@
+{% extends 'blogger/base.html' %}
+
+{% block title %}
+{% if author %}
+{{ author }}'s profile
+{% else %}
+No Author Found
+{% endif %}
+- blogger
+{% endblock %}
+
+{% block main %}
+{% if author %}
+<h1>{{ author }}</h1>
+{% else %}
+There is no author by that username
+{% endif %}
+{% endblock %}

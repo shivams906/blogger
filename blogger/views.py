@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from blogger.forms import PostModelForm
 from blogger.models import Post, Author
+
+User = get_user_model()
 
 
 def index(request):
@@ -26,6 +29,15 @@ def add(request):
 def view_post(request, title):
     post = Post.objects.get(title_slug=title)
     return render(request, "blogger/view_post.html", {"post": post})
+
+
+def view_blogger(request, username):
+    try:
+        user = User.objects.get(username=username)
+        author = get_or_create_author(user)
+    except User.DoesNotExist:
+        author = None
+    return render(request, "blogger/view_blogger.html", {"author": author})
 
 
 def get_or_create_author(user):

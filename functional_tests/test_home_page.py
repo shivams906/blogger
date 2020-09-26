@@ -6,8 +6,9 @@ class HomePageTest(FunctionalTest):
         # Edith goes to the home page
         self.browser.get(f"{self.live_server_url}/blogger/")
 
-        # She logs in
-        self.login(username="edith123", password="password123")
+        # She signs up and logs in
+        self.signup(username="edith123", password="top_secret")
+        self.login(username="edith123", password="top_secret")
 
         # She creates a post and returns to home page
         wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
@@ -34,7 +35,8 @@ class HomePageTest(FunctionalTest):
         )
         self.browser = meredith_browser
         self.browser.get(f"{self.live_server_url}/blogger/")
-        self.login(username="meredith123", password="password123")
+        self.signup(username="meredith123", password="top_secret")
+        self.login(username="meredith123", password="top_secret")
         wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
         wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys(
             "Meredith's title"

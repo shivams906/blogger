@@ -20,6 +20,15 @@ class IndexViewTest(TestCase):
         response = self.client.get("/blogger/")
         self.assertTemplateUsed(response, "blogger/index.html")
 
+    def test_passes_all_posts_as_context(self):
+        post1 = Post.objects.create(title="title", content="content")
+        post2 = Post.objects.create(title="title", content="content")
+        response = self.client.get("/blogger/")
+        self.assertIn("posts", response.context)
+        self.assertEqual(len(response.context["posts"]), 2)
+        self.assertIn(post1, response.context["posts"])
+        self.assertIn(post2, response.context["posts"])
+
 
 class AddPostViewTest(TestCase):
     def test_url_resolves_to_correct_view_function(self):

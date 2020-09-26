@@ -5,7 +5,8 @@ from blogger.models import Post
 
 
 def index(request):
-    return render(request, "blogger/index.html")
+    posts = Post.objects.all()
+    return render(request, "blogger/index.html", {"posts": posts})
 
 
 def add(request):

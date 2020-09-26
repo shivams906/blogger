@@ -1,3 +1,9 @@
 {% extends 'blogger/base.html' %}
 
 {% block title %}Home - blogger{% endblock %}
+
+{% block main %}
+{% for post in posts %}
+{{ post.title }}
+{% endfor %}
+{% endblock %}

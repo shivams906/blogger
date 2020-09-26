@@ -40,3 +40,4 @@ class BlogTest(FunctionalTest):
         body = wait_for(lambda: self.browser.find_element_by_tag_name("body")).text
         self.assertIn("title", body)
         self.assertIn("content", body)
+        self.assertIn("by edith123", body)

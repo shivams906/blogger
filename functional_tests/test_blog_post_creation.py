@@ -37,7 +37,9 @@ class BlogTest(FunctionalTest):
             )
         )
         wait_for(lambda: self.assertIn("title", self.browser.title))
-        body = wait_for(lambda: self.browser.find_element_by_tag_name("body")).text
-        self.assertIn("title", body)
-        self.assertIn("content", body)
-        self.assertIn("by edith123", body)
+        main_content = wait_for(
+            lambda: self.browser.find_element_by_tag_name("main")
+        ).text
+        self.assertIn("title", main_content)
+        self.assertIn("content", main_content)
+        self.assertIn("by edith123", main_content)

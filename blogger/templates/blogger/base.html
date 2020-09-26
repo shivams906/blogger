@@ -10,7 +10,9 @@
 <body>
     <header>
         <a href="{% url 'blogger:index' %}">Home</a>
+        {% if user.is_authenticated %}
         <a href="{% url 'blogger:add' %}">Add Post</a>
+        {% endif %}
         <h1>blogger</h1>
         {% if user.is_authenticated %}
         {{ user.username }}

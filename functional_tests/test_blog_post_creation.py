@@ -43,3 +43,19 @@ class BlogTest(FunctionalTest):
         self.assertIn("title", main_content)
         self.assertIn("content", main_content)
         self.assertIn("by edith123", main_content)
+
+        # She logs out
+        wait_for(lambda: self.browser.find_element_by_link_text("Logout")).click()
+
+        # She is back on the home page
+        wait_for(
+            lambda: self.assertEqual(
+                self.browser.current_url, f"{self.live_server_url}/blogger/"
+            )
+        )
+
+        # There is no Add Post link
+        self.assertEqual(
+            len(wait_for(lambda: self.browser.find_elements_by_link_text("Add Post"))),
+            0,
+        )

@@ -9,6 +9,10 @@ class BlogTest(FunctionalTest):
         header = wait_for(lambda: self.browser.find_element_by_tag_name("header"))
         self.assertIn("blogger", header.text)
 
+        # She signs up and logs in
+        self.signup(username="edith123", password="top_secret")
+        self.login(username="edith123", password="top_secret")
+
         # She clicks on the add post link
         wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
 

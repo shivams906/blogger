@@ -3,7 +3,9 @@
 {% block title %}Home - blogger{% endblock %}
 
 {% block main %}
-{% for post in posts %}
-{{ post.title }}
-{% endfor %}
+<ul>
+    {% for post in posts %}
+    <li>{{ post.title }} - by {{ post.author }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}

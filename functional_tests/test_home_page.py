@@ -66,3 +66,5 @@ class HomePageTest(FunctionalTest):
         self.assertIn("Edith's title", main_content)
         self.assertIn("meredith123", main_content)
         self.assertIn("edith123", main_content)
+
+        meredith_browser.quit()

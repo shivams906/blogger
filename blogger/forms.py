@@ -9,3 +9,10 @@ class PostModelForm(forms.ModelForm):
             "title",
             "content",
         )
+
+    def save(self, author):
+        return Post.objects.create(
+            title=self.cleaned_data["title"],
+            content=self.cleaned_data["content"],
+            author=author,
+        )

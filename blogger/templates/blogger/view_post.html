@@ -3,7 +3,7 @@
 {% block title %}{{ post.title }} - blogger{% endblock %}
 
 {% block main %}
-<h1>{{ post.title }}</h1> by {{ post.author }}
+<h1>{{ post.title }}</h1> by <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a>
 {% if request.user == post.author.user %}
 <a href="{% url 'blogger:edit_post' post.title_slug %}">edit</a>
 <a href="{% url 'blogger:delete_post' post.title_slug %}">delete</a>

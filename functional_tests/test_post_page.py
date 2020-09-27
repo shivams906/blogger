@@ -151,3 +151,47 @@ class PostPageTest(FunctionalTest):
                 self.browser.find_elements_by_link_text("delete"), []
             )
         )
+
+    def test_author_name_links_to_author_page(self):
+        # Edith goes to the home page
+        self.browser.get(f"{self.live_server_url}/blogger/")
+
+        # She signs up and logs in
+        self.signup(username="edith123", password="top_secret")
+        self.login(username="edith123", password="top_secret")
+
+        # She creates a post and is taekn to post's page
+        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
+        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
+        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
+            "content"
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+
+        # She sees the link to edit and delete
+        wait_for(lambda: self.browser.find_element_by_link_text("edit"))
+        wait_for(lambda: self.browser.find_element_by_link_text("delete"))
+
+        # She closes the browser
+        self.browser.quit()
+
+        # Meredith opens her browser
+        self.browser = webdriver.Firefox(firefox_binary="/usr/lib/firefox/firefox")
+
+        # She goes to the homepage
+        self.browser.get(f"{self.live_server_url}/blogger/")
+
+        # She goes to edith's post
+        wait_for(lambda: self.browser.find_element_by_link_text("title")).click()
+
+        # She clicks on edith's name
+        wait_for(lambda: self.browser.find_element_by_link_text("edith123")).click()
+
+        # She is taken to edith's profile page
+        wait_for(lambda: self.assertIn("edith123's profile", self.browser.title))
+        wait_for(
+            lambda: self.assertEqual(
+                self.browser.current_url,
+                f"{self.live_server_url}/blogger/bloggers/edith123/",
+            )
+        )

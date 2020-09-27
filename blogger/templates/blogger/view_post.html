@@ -4,7 +4,9 @@
 
 {% block main %}
 <h1>{{ post.title }}</h1> by {{ post.author }}
+{% if request.user == post.author.user %}
 <a href="{% url 'blogger:edit_post' post.title_slug %}">edit</a>
 <a href="{% url 'blogger:delete_post' post.title_slug %}">delete</a>
+{% endif %}
 <p>{{ post.content }}</p>
 {% endblock %}

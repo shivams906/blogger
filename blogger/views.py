@@ -35,9 +35,13 @@ def view_blogger(request, username):
     try:
         user = User.objects.get(username=username)
         author = get_or_create_author(user)
+        posts = Post.objects.filter(author=author)
     except User.DoesNotExist:
         author = None
-    return render(request, "blogger/view_blogger.html", {"author": author})
+        posts = None
+    return render(
+        request, "blogger/view_blogger.html", {"author": author, "posts": posts}
+    )
 
 
 def get_or_create_author(user):

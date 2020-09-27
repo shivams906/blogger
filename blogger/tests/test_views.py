@@ -170,3 +170,17 @@ class AuthorViewTest(TestCase):
     def test_invalid_author_name_returns_appropriate_response(self):
         response = self.client.get(f"/blogger/bloggers/user/")
         self.assertContains(response, "There is no author by that username")
+
+    def test_view_returns_correct_posts_object_in_context(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
+        self.assertIn("posts", response.context)
+        self.assertIn(post, response.context["posts"])
+
+    def test_invalid_author_with_no_posts_returns_appropriate_response(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
+        self.assertContains(response, f"There are no posts written by {author}")

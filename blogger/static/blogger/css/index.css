@@ -1,0 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+
+header {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+header * {
+  align-self: center;
+}
+header h1 {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  justify-self: center;
+}
+header div#right-header {
+  justify-self: end;
+}
+
+/*# sourceMappingURL=index.css.map */

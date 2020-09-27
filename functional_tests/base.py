@@ -4,13 +4,14 @@ from selenium.common.exceptions import WebDriverException
 from django.test import LiveServerTestCase
 import time
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 User = get_user_model()
 
 MAX_WAIT = 5
 
 
-class FunctionalTest(LiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox(
             firefox_binary=FirefoxBinary("/usr/lib/firefox/firefox")

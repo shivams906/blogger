@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -45,6 +45,18 @@ def edit_post(request, title):
 def view_post(request, title):
     post = Post.objects.get(title_slug=title)
     return render(request, "blogger/view_post.html", {"post": post})
+
+
+@login_required
+def delete_post(request, title):
+    post = Post.objects.get(title_slug=title)
+    if post.author.user == request.user:
+        if request.method == "POST":
+            post.delete()
+            return redirect(reverse("blogger:index"))
+        return render(request, "blogger/delete_post.html", {"post": post})
+    else:
+        return render(request, "blogger/delete_post.html")
 
 
 def view_blogger(request, username):

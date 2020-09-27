@@ -258,29 +258,78 @@ class EditPostViewTest(TestCase):
             response, "/accounts/login/?next=/blogger/posts/title/edit/"
         )
 
-    def test_get_from_users_other_than_post_author_are_shown_the_appropriate_response(
+    def test_users_other_than_post_author_are_shown_the_appropriate_response(
         self,
     ):
         post = Post.objects.create(title="title", content="content", author=self.author)
-        self.client.logout()
         user2 = User.objects.create(username="user2", password="top_secret")
-        # author2 = Author.objects.create(user=user2)
         self.client.force_login(user2)
         response = self.client.get(f"/blogger/posts/{post.title_slug}/edit/")
         self.assertNotIn("form", response.context)
         self.assertContains(response, "You cannot edit this post")
 
-    def test_post_from_users_other_than_post_author_is_shown_the_appropriate_response(
-        self,
-    ):
+
+class DeletePostViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(username="user", password="top_secret")
+        cls.author = Author.objects.create(user=cls.user)
+
+    def test_url_resolves_to_correct_view_function(self):
+        self.client.force_login(self.user)
         post = Post.objects.create(title="title", content="content", author=self.author)
-        self.client.logout()
-        user2 = User.objects.create(username="user2", password="top_secret")
-        # author2 = Author.objects.create(user=user2)
-        self.client.force_login(user2)
-        response = self.client.get(
-            f"/blogger/posts/{post.title_slug}/edit/",
-            data={"title": "my title", "content": "my content"},
+        found = resolve(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertEqual(found.func, views.delete_post)
+
+    def test_view_returns_a_valid_response(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertTemplateUsed(response, "blogger/delete_post.html")
+
+    def test_view_passes_post_in_context(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertIn("post", response.context)
+        self.assertEqual(post, response.context["post"])
+
+    def test_asks_for_confirmation_before_deletion(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertContains(response, "Are you sure you want to delete title?")
+
+    def test_confirmation_deletes_post(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        self.client.post(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertEqual(Post.objects.count(), 0)
+
+    def test_confirmation_redirects_to_home_page(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.post(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertRedirects(response, "/blogger/")
+
+    def test_unauthenticated_users_are_redirected_to_login_page(self):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertRedirects(
+            response, "/accounts/login/?next=/blogger/posts/title/delete/"
         )
-        self.assertNotIn("form", response.context)
-        self.assertContains(response, "You cannot edit this post")
+
+    def test_users_other_than_post_author_are_shown_the_appropriate_response(self):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        user2 = User.objects.create(username="user2", password="top_secret")
+        self.client.force_login(user2)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
+        self.assertNotIn("post", response.context)
+        self.assertContains(response, "You cannot delete this post")

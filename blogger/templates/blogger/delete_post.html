@@ -1,0 +1,16 @@
+{% extends 'blogger/base.html' %}
+
+{% block title %}delete {{ post.title_slug }} - blogger{% endblock %}
+
+{% block main %}
+{% if post %}
+Are you sure you want to delete {{ post.title }}?
+<form method="post">
+    {% csrf_token %}
+    <button id="id_confirm" type="submit">Confirm</button>
+</form>
+<a href="{% url 'blogger:view_post' post.title_slug %}">cancel</a>
+{% else %}
+You cannot delete this post
+{% endif %}
+{% endblock %}

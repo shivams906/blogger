@@ -3,9 +3,13 @@
 {% block title %}Add Post - blogger{% endblock %}
 
 {% block main %}
+{% if form %}
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button id="id_submit" type="submit">Submit</button>
 </form>
+{% else %}
+You cannot edit this post
+{% endif %}
 {% endblock %}

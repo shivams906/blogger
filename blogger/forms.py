@@ -11,8 +11,14 @@ class PostModelForm(forms.ModelForm):
         )
 
     def save(self, author):
-        return Post.objects.create(
-            title=self.cleaned_data["title"],
-            content=self.cleaned_data["content"],
-            author=author,
-        )
+        if self.instance.id != None:
+            self.instance.title = self.cleaned_data["title"]
+            self.instance.content = self.cleaned_data["content"]
+            self.instance.save()
+            return self.instance
+        else:
+            return Post.objects.create(
+                title=self.cleaned_data["title"],
+                content=self.cleaned_data["content"],
+                author=author,
+            )

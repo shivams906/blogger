@@ -37,3 +37,16 @@ class PostModelFormTest(TestCase):
         if form.is_valid():
             post = form.save(author=self.author)
         self.assertEqual(post.author, self.author)
+
+    def test_updates_the_post_if_already_exists(self):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+
+        form = PostModelForm(
+            {"title": "my title", "content": "my content"}, instance=post
+        )
+        changed_post = None
+        if form.is_valid():
+            changed_post = form.save(author=self.author)
+
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(post, changed_post)

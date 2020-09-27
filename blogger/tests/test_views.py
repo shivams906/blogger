@@ -184,3 +184,103 @@ class AuthorViewTest(TestCase):
         author = Author.objects.create(user=user)
         response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
         self.assertContains(response, f"There are no posts written by {author}")
+
+
+class EditPostViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(username="user", password="top_secret")
+        cls.author = Author.objects.create(user=cls.user)
+
+    def test_url_resolves_to_correct_view_function(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        found = resolve(f"/blogger/posts/{post.title_slug}/edit/")
+        self.assertEqual(found.func, views.edit_post)
+
+    def test_view_returns_a_valid_response(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/edit/")
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/edit/")
+        self.assertTemplateUsed(response, "blogger/add.html")
+
+    def test_view_passes_correct_form_in_context(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/edit/")
+        self.assertIn("form", response.context)
+        self.assertIsInstance(response.context["form"], PostModelForm)
+
+    def test_view_passes_bound_form(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(
+            title="my title", content="my content", author=self.author
+        )
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/edit/")
+        self.assertContains(response, "my title")
+        self.assertContains(response, "my content")
+
+    def test_post_updates_data(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        self.client.post(
+            f"/blogger/posts/{post.title_slug}/edit/",
+            data={"title": "my title", "content": "my content"},
+        )
+        changed_post = Post.objects.get(id=post.id)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual("my title", changed_post.title)
+        self.assertEqual("my content", changed_post.content)
+
+    def test_valid_post_redirects_to_post_page(self):
+        self.client.force_login(self.user)
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.post(
+            f"/blogger/posts/{post.title_slug}/edit/",
+            data={"title": "my title", "content": "my content"},
+        )
+        self.assertRedirects(response, "/blogger/posts/my-title/")
+
+    def test_unauthenticated_users_are_redirected_to_login_page(self):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.post(
+            f"/blogger/posts/{post.title_slug}/edit/",
+            data={"title": "my title", "content": "my content"},
+        )
+        self.assertRedirects(
+            response, "/accounts/login/?next=/blogger/posts/title/edit/"
+        )
+
+    def test_get_from_users_other_than_post_author_are_shown_the_appropriate_response(
+        self,
+    ):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        self.client.logout()
+        user2 = User.objects.create(username="user2", password="top_secret")
+        # author2 = Author.objects.create(user=user2)
+        self.client.force_login(user2)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/edit/")
+        self.assertNotIn("form", response.context)
+        self.assertContains(response, "You cannot edit this post")
+
+    def test_post_from_users_other_than_post_author_is_shown_the_appropriate_response(
+        self,
+    ):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        self.client.logout()
+        user2 = User.objects.create(username="user2", password="top_secret")
+        # author2 = Author.objects.create(user=user2)
+        self.client.force_login(user2)
+        response = self.client.get(
+            f"/blogger/posts/{post.title_slug}/edit/",
+            data={"title": "my title", "content": "my content"},
+        )
+        self.assertNotIn("form", response.context)
+        self.assertContains(response, "You cannot edit this post")

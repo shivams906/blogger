@@ -4,5 +4,6 @@
 
 {% block main %}
 <h1>{{ post.title }}</h1> by {{ post.author }}
+<a href="{% url 'blogger:edit_post' post.title_slug %}">edit</a>
 <p>{{ post.content }}</p>
 {% endblock %}

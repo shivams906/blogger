@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from blogger.models import Post, Author
-from blogger.forms import PostModelForm
+from blogger.models import Post, Author, Comment
+from blogger.forms import PostModelForm, CommentModelForm
 
 User = get_user_model()
 
@@ -50,3 +50,14 @@ class PostModelFormTest(TestCase):
 
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(post, changed_post)
+
+
+class CommentModelFormTest(TestCase):
+    def test_valid_data_creates_comment(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        form = CommentModelForm({"comment_text": "comment"})
+        if form.is_valid():
+            form.save(post, author)
+        self.assertEqual(Comment.objects.count(), 1)

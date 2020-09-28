@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from blogger.forms import PostModelForm
+from blogger.forms import PostModelForm, CommentModelForm
 from blogger.models import Post, Author
 
 User = get_user_model()
@@ -44,7 +44,10 @@ def edit_post(request, title):
 
 def view_post(request, title):
     post = Post.objects.get(title_slug=title)
-    return render(request, "blogger/view_post.html", {"post": post})
+    comments = post.comment_set.all()
+    return render(
+        request, "blogger/view_post.html", {"post": post, "comments": comments}
+    )
 
 
 @login_required
@@ -57,6 +60,20 @@ def delete_post(request, title):
         return render(request, "blogger/delete_post.html", {"post": post})
     else:
         return render(request, "blogger/delete_post.html")
+
+
+@login_required
+def add_comment(request, title):
+    if request.method == "POST":
+        post = Post.objects.get(title_slug=title)
+        author = get_or_create_author(request.user)
+        form = CommentModelForm(request.POST)
+        if form.is_valid():
+            form.save(post=post, author=author)
+            return redirect(post)
+    else:
+        form = CommentModelForm()
+    return render(request, "blogger/add_comment.html", {"form": form})
 
 
 def view_blogger(request, username):

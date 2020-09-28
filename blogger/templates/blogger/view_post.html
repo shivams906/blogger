@@ -9,4 +9,14 @@
 <a href="{% url 'blogger:delete_post' post.title_slug %}">delete</a>
 {% endif %}
 <p>{{ post.content }}</p>
+<a href="{% url 'blogger:add_comment' post.title_slug %}">add comment</a>
+{% if comments %}
+<ul>
+    {% for comment in comments %}
+    <li>
+        <p id="id_comment">{{ comment }}</p>by {{ comment.author }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}

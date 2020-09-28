@@ -3,8 +3,8 @@ from django.urls import resolve
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from blogger import views
-from blogger.forms import PostModelForm
-from blogger.models import Post, Author
+from blogger.forms import PostModelForm, CommentModelForm
+from blogger.models import Post, Author, Comment
 
 
 User = get_user_model()
@@ -138,6 +138,17 @@ class PostViewTest(TestCase):
         )
         response = self.client.get(f"/blogger/posts/{post.title_slug}/")
         self.assertEqual(post, response.context["post"])
+
+    def test_context_contains_post_comments(self):
+        post = Post.objects.create(
+            title="My title", content="content", author=self.author
+        )
+        comment = Comment.objects.create(
+            comment_text="comment", post=post, author=self.author
+        )
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/")
+        self.assertIn("comments", response.context)
+        self.assertIn(comment, response.context["comments"])
 
 
 class AuthorViewTest(TestCase):
@@ -333,3 +344,72 @@ class DeletePostViewTest(TestCase):
         response = self.client.get(f"/blogger/posts/{post.title_slug}/delete/")
         self.assertNotIn("post", response.context)
         self.assertContains(response, "You cannot delete this post")
+
+
+class AddCommentViewTest(TestCase):
+    def test_url_resolves_to_correct_view_function(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        found = resolve(f"/blogger/posts/{post.title_slug}/comment/")
+        self.assertEqual(found.func, views.add_comment)
+
+    def test_view_returns_a_valid_response(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        self.client.force_login(user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/comment/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response, HttpResponse)
+
+    def test_view_uses_correct_template(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        self.client.force_login(user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/comment/")
+        self.assertTemplateUsed(response, "blogger/add_comment.html")
+
+    def test_view_passes_correct_form_in_context(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        self.client.force_login(user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        response = self.client.get(f"/blogger/posts/{post.title_slug}/comment/")
+        self.assertIn("form", response.context)
+        self.assertIsInstance(response.context["form"], CommentModelForm)
+
+    def test_valid_post_saves_comment(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        self.client.force_login(user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        self.client.post(
+            f"/blogger/posts/{post.title_slug}/comment/",
+            data={"comment_text": "comment"},
+        )
+        self.assertEqual(Comment.objects.count(), 1)
+
+    def test_valid_post_redirects_to_post_page(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        self.client.force_login(user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        response = self.client.post(
+            f"/blogger/posts/{post.title_slug}/comment/",
+            data={"comment_text": "comment"},
+        )
+        self.assertRedirects(response, post.get_absolute_url())
+
+    def test_unauthenticated_users_are_redirected_to_login_page(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        response = self.client.post(
+            f"/blogger/posts/{post.title_slug}/comment/",
+            data={"comment_text": "comment"},
+        )
+        self.assertRedirects(
+            response, f"/accounts/login/?next=/blogger/posts/{post.title_slug}/comment/"
+        )

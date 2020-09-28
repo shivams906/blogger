@@ -30,3 +30,16 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.title_slug = slugify(self.title)
         return super().save(*args, **kwargs)
+
+
+class Comment(models.Model):
+    comment_text = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ("created",)
+
+    def __str__(self):
+        return self.comment_text

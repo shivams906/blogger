@@ -1,5 +1,5 @@
 from django import forms
-from blogger.models import Post
+from blogger.models import Post, Comment
 
 
 class PostModelForm(forms.ModelForm):
@@ -22,3 +22,14 @@ class PostModelForm(forms.ModelForm):
                 content=self.cleaned_data["content"],
                 author=author,
             )
+
+
+class CommentModelForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ("comment_text",)
+
+    def save(self, post, author):
+        return Comment.objects.create(
+            comment_text=self.cleaned_data["comment_text"], post=post, author=author
+        )

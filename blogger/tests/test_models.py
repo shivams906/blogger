@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from blogger.models import Post, Author
+from blogger.models import Post, Author, Comment
 from django.urls import reverse
 
 User = get_user_model()
@@ -47,3 +47,44 @@ class AuthorModelTest(TestCase):
         user = User.objects.create(username="user", password="top_secret")
         author = Author.objects.create(user=user)
         self.assertEqual(str(author), author.user.username)
+
+
+class CommentModelTest(TestCase):
+    def test_valid_data_creates_comment(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        Comment.objects.create(comment_text="comment", post=post, author=author)
+        self.assertEqual(Comment.objects.count(), 1)
+
+    def test_timestamp_is_added_automatically(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        comment = Comment.objects.create(
+            comment_text="comment", post=post, author=author
+        )
+        self.assertIsNotNone(comment.created)
+
+    def test_string_representation(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        comment = Comment.objects.create(
+            comment_text="comment", post=post, author=author
+        )
+        self.assertEqual(str(comment), comment.comment_text)
+
+    def test_comments_are_ordered_by_creation_date(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        comment1 = Comment.objects.create(
+            comment_text="comment", post=post, author=author
+        )
+        comment2 = Comment.objects.create(
+            comment_text="comment", post=post, author=author
+        )
+        comments = Comment.objects.all()
+        self.assertEqual(comment1, comments[0])
+        self.assertEqual(comment2, comments[1])

@@ -195,3 +195,68 @@ class PostPageTest(FunctionalTest):
                 f"{self.live_server_url}/blogger/bloggers/edith123/",
             )
         )
+
+    def test_can_comment_on_the_post(self):
+        # Edith goes to the home page
+        self.browser.get(f"{self.live_server_url}/blogger/")
+
+        # She signs up and logs in
+        self.signup(username="edith123", password="top_secret")
+        self.login(username="edith123", password="top_secret")
+
+        # She creates a post and is taekn to post's page
+        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
+        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
+        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
+            "content"
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+
+        # She clicks on add comment link
+        wait_for(lambda: self.browser.find_element_by_link_text("add comment")).click()
+
+        # She is on the add comment page
+        wait_for(lambda: self.assertIn("Add comment", self.browser.title))
+
+        # She writes her comment and clicks on submit
+        wait_for(lambda: self.browser.find_element_by_id("id_comment_text")).send_keys(
+            "edith's comment"
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+
+        # Her comment is now shown below the post
+        comment = wait_for(lambda: self.browser.find_element_by_id("id_comment")).text
+        self.assertIn("edith's comment", comment)
+
+        # She closes the browser
+        self.browser.quit()
+
+        # Meredith opens her browser
+        self.browser = webdriver.Firefox(firefox_binary="/usr/lib/firefox/firefox")
+
+        # She goes to the homepage
+        self.browser.get(f"{self.live_server_url}/blogger/")
+
+        # She signs up and logs in
+        self.signup(username="meredith123", password="top_secret")
+        self.login(username="meredith123", password="top_secret")
+
+        # She goes to edith's post
+        wait_for(lambda: self.browser.find_element_by_link_text("title")).click()
+
+        # She also clicks on add comment link
+        wait_for(lambda: self.browser.find_element_by_link_text("add comment")).click()
+
+        # She writes her comment and clicks on submit
+        wait_for(lambda: self.browser.find_element_by_id("id_comment_text")).send_keys(
+            "meredith's comment"
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+
+        # Her comment is now shown below edith's comment
+        comments = wait_for(lambda: self.browser.find_elements_by_id("id_comment"))
+        self.assertEqual("edith's comment", comments[0].text)
+        self.assertEqual("meredith's comment", comments[1].text)
+
+        # She closes the browser
+        self.browser.quit()

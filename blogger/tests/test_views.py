@@ -33,10 +33,21 @@ class IndexViewTest(TestCase):
 
         response = self.client.get("/blogger/")
 
-        self.assertIn("posts", response.context)
-        self.assertEqual(len(response.context["posts"]), 2)
-        self.assertIn(post1, response.context["posts"])
-        self.assertIn(post2, response.context["posts"])
+        self.assertIn("page_obj", response.context)
+        self.assertEqual(len(response.context["page_obj"]), 2)
+        self.assertIn(post1, response.context["page_obj"])
+        self.assertIn(post2, response.context["page_obj"])
+
+    def test_posts_context_object_is_paginated(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.create(user=user)
+        for i in range(11):
+            post = Post.objects.create(
+                title="My title", content="content", author=author
+            )
+        response = self.client.get("/blogger/")
+        self.assertIn("page_obj", response.context)
+        self.assertEqual(len(response.context["page_obj"]), 10)
 
 
 class AddPostViewTest(TestCase):

@@ -4,11 +4,28 @@
 
 {% block main %}
 <ul>
-    {% for post in posts %}
+    {% for post in page_obj %}
     <li>
         <a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a>
         - by
         <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a></li>
     {% endfor %}
+    <div class="pagination">
+        <div class="step-links">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    </div>
 </ul>
 {% endblock %}

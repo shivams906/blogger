@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
 from blogger.forms import PostModelForm, CommentModelForm
 from blogger.models import Post, Author
 
@@ -10,7 +11,11 @@ User = get_user_model()
 
 def index(request):
     posts = Post.objects.all()
-    return render(request, "blogger/index.html", {"posts": posts})
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "blogger/index.html", {"page_obj": page_obj})
 
 
 @login_required

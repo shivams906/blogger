@@ -11,12 +11,7 @@ class PostPageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="title", content="content")
 
         # She clicks on the edit link
         wait_for(lambda: self.browser.find_element_by_link_text("edit")).click()
@@ -42,12 +37,7 @@ class PostPageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="title", content="content")
 
         # She clicks on the delete link
         wait_for(lambda: self.browser.find_element_by_link_text("delete")).click()
@@ -98,12 +88,7 @@ class PostPageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and is taekn to post's page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="title", content="content")
 
         # She sees the link to edit and delete
         wait_for(lambda: self.browser.find_element_by_link_text("edit"))
@@ -160,13 +145,8 @@ class PostPageTest(FunctionalTest):
         self.signup(username="edith123", password="top_secret")
         self.login(username="edith123", password="top_secret")
 
-        # She creates a post and is taekn to post's page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        # She creates a post and is taken to post's page
+        self.create_a_post(title="title", content="content")
 
         # She sees the link to edit and delete
         wait_for(lambda: self.browser.find_element_by_link_text("edit"))
@@ -205,12 +185,7 @@ class PostPageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and is taekn to post's page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="title", content="content")
 
         # She clicks on add comment link
         wait_for(lambda: self.browser.find_element_by_link_text("add comment")).click()

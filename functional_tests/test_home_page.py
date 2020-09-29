@@ -12,14 +12,7 @@ class HomePageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and returns to home page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys(
-            "Edith's title"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="Edith's title", content='content')
         wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
 
         # She sees a link to her post with her name beside it
@@ -38,14 +31,7 @@ class HomePageTest(FunctionalTest):
         self.browser.get(f"{self.live_server_url}/blogger/")
         self.signup(username="meredith123", password="top_secret")
         self.login(username="meredith123", password="top_secret")
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys(
-            "Meredith's title"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="Meredith's title", content='content')
         wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
 
         # She sees both posts on the homepage
@@ -79,12 +65,7 @@ class HomePageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and returns to home page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title='title', content='content')
         wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
 
         # She clicks on the title of her post
@@ -116,12 +97,7 @@ class HomePageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and returns to home page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title='title', content='content')
         wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
 
         # She clicks on the post's author's name (her name)

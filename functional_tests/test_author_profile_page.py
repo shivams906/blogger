@@ -11,12 +11,7 @@ class AuthorProfilePageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and returns to home page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="title", content="content")
         wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
 
         # She goes to her profile page linked by her username
@@ -70,12 +65,7 @@ class AuthorProfilePageTest(FunctionalTest):
         self.login(username="edith123", password="top_secret")
 
         # She creates a post and returns to home page
-        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
-        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys("title")
-        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
-            "content"
-        )
-        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+        self.create_a_post(title="title", content="content")
         wait_for(lambda: self.browser.find_element_by_link_text("Home")).click()
 
         # She goes to her profile page linked by her username

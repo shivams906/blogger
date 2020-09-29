@@ -43,6 +43,14 @@ class FunctionalTest(StaticLiveServerTestCase):
         )
         wait_for(lambda: self.browser.find_element_by_id("id_login")).click()
 
+    def create_a_post(self, title, content):
+        wait_for(lambda: self.browser.find_element_by_link_text("Add Post")).click()
+        wait_for(lambda: self.browser.find_element_by_id("id_title")).send_keys(title)
+        wait_for(lambda: self.browser.find_element_by_id("id_content")).send_keys(
+            content
+        )
+        wait_for(lambda: self.browser.find_element_by_id("id_submit")).click()
+
 
 def wait_for(function):
     start_time = time.time()

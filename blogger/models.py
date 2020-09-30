@@ -18,7 +18,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=255)
-    title_slug = models.SlugField()
+    title_slug = models.SlugField(unique=True, null=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     class Meta:

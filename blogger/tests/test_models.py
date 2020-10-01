@@ -10,7 +10,7 @@ class PostModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         user = User.objects.create(username="user", password="top_secret")
-        cls.author = Author.objects.create(user=user)
+        cls.author = Author.objects.get(user=user)
 
     def test_valid_data_creates_post(self):
         Post.objects.create(content="content", author=self.author)
@@ -43,23 +43,29 @@ class PostModelTest(TestCase):
 
 
 class AuthorModelTest(TestCase):
+    def test_author_object_is_created_automatically_on_user_creation(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.first()
+        self.assertIsNotNone(author)
+        self.assertEqual(author.user, user)
+
     def test_author_object_is_displayed_as_username(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         self.assertEqual(str(author), author.user.username)
 
 
 class CommentModelTest(TestCase):
     def test_valid_data_creates_comment(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         post = Post.objects.create(title="title", content="content", author=author)
         Comment.objects.create(comment_text="comment", post=post, author=author)
         self.assertEqual(Comment.objects.count(), 1)
 
     def test_timestamp_is_added_automatically(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         post = Post.objects.create(title="title", content="content", author=author)
         comment = Comment.objects.create(
             comment_text="comment", post=post, author=author
@@ -68,7 +74,7 @@ class CommentModelTest(TestCase):
 
     def test_string_representation(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         post = Post.objects.create(title="title", content="content", author=author)
         comment = Comment.objects.create(
             comment_text="comment", post=post, author=author
@@ -77,7 +83,7 @@ class CommentModelTest(TestCase):
 
     def test_comments_are_ordered_by_creation_date(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         post = Post.objects.create(title="title", content="content", author=author)
         comment1 = Comment.objects.create(
             comment_text="comment", post=post, author=author

@@ -25,10 +25,10 @@ class IndexViewTest(TestCase):
 
     def test_passes_all_posts_as_context(self):
         user1 = User.objects.create(username="user1", password="top_secret")
-        author1 = Author.objects.create(user=user1)
+        author1 = Author.objects.get(user=user1)
         post1 = Post.objects.create(title="title", content="content", author=author1)
         user2 = User.objects.create(username="user2", password="top_secret")
-        author2 = Author.objects.create(user=user2)
+        author2 = Author.objects.get(user=user2)
         post2 = Post.objects.create(title="title", content="content", author=author2)
 
         response = self.client.get("/blogger/")
@@ -40,7 +40,7 @@ class IndexViewTest(TestCase):
 
     def test_posts_context_object_is_paginated(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         for i in range(11):
             post = Post.objects.create(
                 title="My title", content="content", author=author
@@ -113,7 +113,7 @@ class PostViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         user = User.objects.create(username="user", password="top_secret")
-        cls.author = Author.objects.create(user=user)
+        cls.author = Author.objects.get(user=user)
 
     def test_url_resolves_to_correct_view_function(self):
         post = Post.objects.create(
@@ -165,26 +165,26 @@ class PostViewTest(TestCase):
 class AuthorViewTest(TestCase):
     def test_url_resolves_to_correct_view_function(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         found = resolve(f"/blogger/bloggers/{author.user.username}/")
         self.assertEqual(found.func, views.view_blogger)
 
     def test_view_returns_a_valid_response(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
         self.assertIsInstance(response, HttpResponse)
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
         self.assertTemplateUsed(response, "blogger/view_blogger.html")
 
     def test_view_returns_correct_author_object_in_context(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
         self.assertIn("author", response.context)
         self.assertEqual(response.context["author"], author)
@@ -195,7 +195,7 @@ class AuthorViewTest(TestCase):
 
     def test_view_returns_correct_posts_object_in_context(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         post = Post.objects.create(title="title", content="content", author=author)
         response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
         self.assertIn("posts", response.context)
@@ -203,7 +203,7 @@ class AuthorViewTest(TestCase):
 
     def test_invalid_author_with_no_posts_returns_appropriate_response(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         response = self.client.get(f"/blogger/bloggers/{author.user.username}/")
         self.assertContains(response, f"There are no posts written by {author}")
 
@@ -212,7 +212,7 @@ class EditPostViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=cls.user)
+        author = Author.objects.get(user=cls.user)
         cls.post = Post.objects.create(title="title", content="content", author=author)
 
     def test_url_resolves_to_correct_view_function(self):
@@ -285,7 +285,7 @@ class DeletePostViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=cls.user)
+        author = Author.objects.get(user=cls.user)
         cls.post = Post.objects.create(title="title", content="content", author=author)
 
     def test_url_resolves_to_correct_view_function(self):
@@ -343,7 +343,7 @@ class AddCommentViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=cls.user)
+        author = Author.objects.get(user=cls.user)
         cls.post = Post.objects.create(title="title", content="content", author=author)
 
     def test_url_resolves_to_correct_view_function(self):

@@ -1,7 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
+from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -43,3 +45,9 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment_text
+
+
+@receiver(post_save, sender=User)
+def create_author(sender, **kwargs):
+    if kwargs["created"]:
+        Author.objects.create(user=kwargs["instance"])

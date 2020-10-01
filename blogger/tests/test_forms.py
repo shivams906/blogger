@@ -10,7 +10,7 @@ class PostModelFormTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         user = User.objects.create(username="user", password="top_secret")
-        cls.author = Author.objects.create(user=user)
+        cls.author = Author.objects.get(user=user)
 
     def test_valid_data_creates_post(self):
         form = PostModelForm({"title": "title", "content": "content"})
@@ -55,7 +55,7 @@ class PostModelFormTest(TestCase):
 class CommentModelFormTest(TestCase):
     def test_valid_data_creates_comment(self):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.create(user=user)
+        author = Author.objects.get(user=user)
         post = Post.objects.create(title="title", content="content", author=author)
         form = CommentModelForm({"comment_text": "comment"})
         if form.is_valid():

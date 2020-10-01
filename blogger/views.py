@@ -20,7 +20,7 @@ def index(request):
 
 @login_required
 def add(request):
-    author = get_or_create_author(request.user)
+    author = Author.objects.get(user=request.user)
     if request.method == "POST":
         form = PostModelForm(request.POST)
         if form.is_valid():
@@ -71,7 +71,7 @@ def delete_post(request, title):
 def add_comment(request, title):
     if request.method == "POST":
         post = Post.objects.get(title_slug=title)
-        author = get_or_create_author(request.user)
+        author = Author.objects.get(user=request.user)
         form = CommentModelForm(request.POST)
         if form.is_valid():
             form.save(post=post, author=author)
@@ -84,7 +84,7 @@ def add_comment(request, title):
 def view_blogger(request, username):
     try:
         user = User.objects.get(username=username)
-        author = get_or_create_author(user)
+        author = Author.objects.get(user=user)
         posts = Post.objects.filter(author=author)
     except User.DoesNotExist:
         author = None
@@ -92,11 +92,3 @@ def view_blogger(request, username):
     return render(
         request, "blogger/view_blogger.html", {"author": author, "posts": posts}
     )
-
-
-def get_or_create_author(user):
-    try:
-        author = Author.objects.get(user=user)
-    except Author.DoesNotExist:
-        author = Author.objects.create(user=user)
-    return author

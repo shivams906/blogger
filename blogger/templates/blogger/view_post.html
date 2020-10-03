@@ -3,18 +3,22 @@
 {% block title %}{{ post.title }} - blogger{% endblock %}
 
 {% block main %}
-<h1>{{ post.title }}</h1> by <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a>
+<h2>{{ post.title }}</h2>
+by <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a>
+on {{ post.created }}
 {% if request.user == post.author.user %}
 <a href="{% url 'blogger:edit_post' post.title_slug %}">edit</a>
 <a href="{% url 'blogger:delete_post' post.title_slug %}">delete</a>
 {% endif %}
-<p>{{ post.content }}</p>
+<p>{{ post.content|linebreaksbr }}</p>
+<h3>Comments:</h3>
 <a href="{% url 'blogger:add_comment' post.title_slug %}">add comment</a>
 {% if comments %}
 <ul>
     {% for comment in comments %}
     <li>
-        <p id="id_comment">{{ comment }}</p>by {{ comment.author }}
+        {{ comment.author }} wrote on {{ comment.created }}:
+        <p id="id_comment">{{ comment|linebreaksbr }}</p>
     </li>
     {% endfor %}
 </ul>

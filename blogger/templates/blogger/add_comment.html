@@ -1,4 +1,5 @@
 {% extends 'blogger/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}
 Add comment - blogger
@@ -7,7 +8,7 @@ Add comment - blogger
 {% block main %}
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form|crispy }}
     <button id="id_submit" type="submit">Submit</button>
 </form>
 {% endblock %}

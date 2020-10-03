@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+a {
+  text-decoration: none;
+}
+
 header {
   display: grid;
   grid-template-columns: auto auto auto;
@@ -16,6 +20,11 @@ header h1 {
 }
 header div#right-header {
   justify-self: end;
+}
+
+main {
+  max-width: 800px;
+  margin: auto;
 }
 
 /*# sourceMappingURL=index.css.map */

@@ -6,9 +6,11 @@
 <ul>
     {% for post in page_obj %}
     <li>
-        <a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a>
+        <h3><a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a></h3>
         - by
-        <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a></li>
+        <a href="{% url 'blogger:view_blogger' post.author %}">{{ post.author }}</a>
+        on {{ post.created }}
+    </li>
     {% endfor %}
     <div class="pagination">
         <div class="step-links">

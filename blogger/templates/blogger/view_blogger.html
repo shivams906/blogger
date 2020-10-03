@@ -15,7 +15,10 @@ No Author Found
 {% if posts %}
 <ul>
     {% for post in posts %}
-    <li><a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a></li>
+    <li>
+        <h3><a href="{% url 'blogger:view_post' post.title_slug %}">{{ post.title }}</a></h3>
+        on {{ post.created }}
+    </li>
     {% endfor %}
 </ul>
 {% else %}

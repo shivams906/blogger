@@ -26,10 +26,10 @@ class IndexViewTest(TestCase):
     def test_passes_all_posts_as_context(self):
         user1 = User.objects.create(username="user1", password="top_secret")
         author1 = Author.objects.get(user=user1)
-        post1 = Post.objects.create(title="title", content="content", author=author1)
+        post1 = Post.objects.create(title="title1", content="content", author=author1)
         user2 = User.objects.create(username="user2", password="top_secret")
         author2 = Author.objects.get(user=user2)
-        post2 = Post.objects.create(title="title", content="content", author=author2)
+        post2 = Post.objects.create(title="title2", content="content", author=author2)
 
         response = self.client.get("/blogger/")
 
@@ -43,7 +43,7 @@ class IndexViewTest(TestCase):
         author = Author.objects.get(user=user)
         for i in range(11):
             post = Post.objects.create(
-                title="My title", content="content", author=author
+                title=f"title{i}", content="content", author=author
             )
         response = self.client.get("/blogger/")
         self.assertIn("page_obj", response.context)

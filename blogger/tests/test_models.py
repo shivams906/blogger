@@ -17,8 +17,12 @@ class PostModelTest(TestCase):
         self.assertEqual(Post.objects.count(), 1)
 
     def test_posts_are_ordered_by_creation_date(self):
-        post1 = Post.objects.create(content="content", author=self.author)
-        post2 = Post.objects.create(content="content", author=self.author)
+        post1 = Post.objects.create(
+            title="title1", content="content", author=self.author
+        )
+        post2 = Post.objects.create(
+            title="title2", content="content", author=self.author
+        )
         self.assertEqual(Post.objects.first(), post2)
 
     def test_modified_date_is_changed_on_modification(self):

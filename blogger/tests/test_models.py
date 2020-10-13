@@ -70,6 +70,11 @@ class PostModelTest(TestCase):
         )
         self.assertEqual(post.title_slug, "my-title")
 
+    def test_slugified_title_is_unique(self):
+        Post.objects.create(title="title's", content="content", author=self.author)
+        with self.assertRaises(IntegrityError):
+            Post.objects.create(title="titles", content="content", author=self.author)
+
 
 class AuthorModelTest(TestCase):
     def test_author_object_is_created_automatically_on_user_creation(self):

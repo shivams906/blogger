@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from blogger.models import Post, Author, Comment
 from django.urls import reverse
+from django.db.utils import IntegrityError
 
 User = get_user_model()
 
@@ -12,9 +13,33 @@ class PostModelTest(TestCase):
         user = User.objects.create(username="user", password="top_secret")
         cls.author = Author.objects.get(user=user)
 
+    def test_post_str_representation(self):
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        self.assertEqual(str(post), post.title)
+
     def test_valid_data_creates_post(self):
-        Post.objects.create(content="content", author=self.author)
+        Post.objects.create(title="title", content="content", author=self.author)
         self.assertEqual(Post.objects.count(), 1)
+
+    def test_post_with_empty_title_is_not_valid(self):
+        post = Post(title="", content="content", author=self.author)
+        with self.assertRaises(IntegrityError):
+            post.save()
+
+    def test_post_without_title_is_not_valid(self):
+        post = Post(content="content", author=self.author)
+        with self.assertRaises(IntegrityError):
+            post.save()
+
+    def test_post_with_empty_content_is_not_valid(self):
+        post = Post(title="title", content="", author=self.author)
+        with self.assertRaises(IntegrityError):
+            post.save()
+
+    def test_post_without_content_is_not_valid(self):
+        post = Post(title="title", author=self.author)
+        with self.assertRaises(IntegrityError):
+            post.save()
 
     def test_posts_are_ordered_by_creation_date(self):
         post1 = Post.objects.create(
@@ -26,7 +51,7 @@ class PostModelTest(TestCase):
         self.assertEqual(Post.objects.first(), post2)
 
     def test_modified_date_is_changed_on_modification(self):
-        post = Post.objects.create(content="content", author=self.author)
+        post = Post.objects.create(title="title", content="content", author=self.author)
         pre_modification = post.modified
         post.content = "other content"
         post.save()

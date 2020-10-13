@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 from django.dispatch import receiver
+from django.db.utils import IntegrityError
 
 User = get_user_model()
 
@@ -26,10 +27,17 @@ class Post(models.Model):
     class Meta:
         ordering = ("-created",)
 
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self):
         return reverse("blogger:view_post", args=[self.title_slug])
 
     def save(self, *args, **kwargs):
+        if self.title == "":
+            raise IntegrityError("No title provided")
+        if self.content == "":
+            raise IntegrityError("No content provided")
         self.title_slug = slugify(self.title)
         return super().save(*args, **kwargs)
 

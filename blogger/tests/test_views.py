@@ -118,108 +118,86 @@ class PostViewTest(TestCase):
     def setUpTestData(cls):
         user = User.objects.create(username="user", password="top_secret")
         cls.author = Author.objects.get(user=user)
+        cls.post = Post.objects.create(
+            title="My title", content="content", author=cls.author
+        )
 
     def test_url_resolves_to_correct_view_function(self):
-        post = Post.objects.create(
-            title="My title", content="content", author=self.author
-        )
-        found = resolve(reverse("blogger:view_post", args=(post.title_slug,)))
+        found = resolve(reverse("blogger:view_post", args=(self.post.title_slug,)))
         self.assertEqual(found.func, views.view_post)
 
     def test_view_returns_a_valid_response(self):
-        post = Post.objects.create(
-            title="My title", content="content", author=self.author
-        )
         response = self.client.get(
-            reverse("blogger:view_post", args=(post.title_slug,))
+            reverse("blogger:view_post", args=(self.post.title_slug,))
         )
         self.assertIsInstance(response, HttpResponse)
 
     def test_view_uses_correct_template(self):
-        post = Post.objects.create(
-            title="My title", content="content", author=self.author
-        )
         response = self.client.get(
-            reverse("blogger:view_post", args=(post.title_slug,))
+            reverse("blogger:view_post", args=(self.post.title_slug,))
         )
         self.assertTemplateUsed(response, "blogger/view_post.html")
 
     def test_context_contains_post_object(self):
-        post = Post.objects.create(
-            title="My title", content="content", author=self.author
-        )
         response = self.client.get(
-            reverse("blogger:view_post", args=(post.title_slug,))
+            reverse("blogger:view_post", args=(self.post.title_slug,))
         )
         self.assertIn("post", response.context)
 
     def test_context_post_object_is_correct_one(self):
-        post = Post.objects.create(
-            title="My title", content="content", author=self.author
-        )
         response = self.client.get(
-            reverse("blogger:view_post", args=(post.title_slug,))
+            reverse("blogger:view_post", args=(self.post.title_slug,))
         )
-        self.assertEqual(post, response.context["post"])
+        self.assertEqual(self.post, response.context["post"])
 
     def test_context_contains_post_comments(self):
-        post = Post.objects.create(
-            title="My title", content="content", author=self.author
-        )
         comment = Comment.objects.create(
-            comment_text="comment", post=post, author=self.author
+            comment_text="comment", post=self.post, author=self.author
         )
         response = self.client.get(
-            reverse("blogger:view_post", args=(post.title_slug,))
+            reverse("blogger:view_post", args=(self.post.title_slug,))
         )
         self.assertIn("comments", response.context)
         self.assertIn(comment, response.context["comments"])
 
 
 class AuthorViewTest(TestCase):
-    def test_url_resolves_to_correct_view_function(self):
+    @classmethod
+    def setUpTestData(cls):
         user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.get(user=user)
-        found = resolve(reverse("blogger:view_blogger", args=(author,)))
+        cls.author = Author.objects.get(user=user)
+
+    def test_url_resolves_to_correct_view_function(self):
+        found = resolve(reverse("blogger:view_blogger", args=(self.author,)))
         self.assertEqual(found.func, views.view_blogger)
 
     def test_view_returns_a_valid_response(self):
-        user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.get(user=user)
-        response = self.client.get(reverse("blogger:view_blogger", args=(author,)))
+        response = self.client.get(reverse("blogger:view_blogger", args=(self.author,)))
         self.assertIsInstance(response, HttpResponse)
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.get(user=user)
-        response = self.client.get(reverse("blogger:view_blogger", args=(author,)))
+        response = self.client.get(reverse("blogger:view_blogger", args=(self.author,)))
         self.assertTemplateUsed(response, "blogger/view_blogger.html")
 
     def test_view_returns_correct_author_object_in_context(self):
-        user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.get(user=user)
-        response = self.client.get(reverse("blogger:view_blogger", args=(author,)))
+        response = self.client.get(reverse("blogger:view_blogger", args=(self.author,)))
         self.assertIn("author", response.context)
-        self.assertEqual(response.context["author"], author)
+        self.assertEqual(response.context["author"], self.author)
 
     def test_invalid_author_name_returns_appropriate_response(self):
-        response = self.client.get(f"/blogger/bloggers/user/")
+        response = self.client.get(f"/blogger/bloggers/nonuser/")
         self.assertContains(response, "There is no author by that username")
 
     def test_view_returns_correct_posts_object_in_context(self):
-        user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.get(user=user)
-        post = Post.objects.create(title="title", content="content", author=author)
-        response = self.client.get(reverse("blogger:view_blogger", args=(author,)))
+        post = Post.objects.create(title="title", content="content", author=self.author)
+        response = self.client.get(reverse("blogger:view_blogger", args=(self.author,)))
         self.assertIn("posts", response.context)
         self.assertIn(post, response.context["posts"])
 
     def test_invalid_author_with_no_posts_returns_appropriate_response(self):
-        user = User.objects.create(username="user", password="top_secret")
-        author = Author.objects.get(user=user)
-        response = self.client.get(reverse("blogger:view_blogger", args=(author,)))
-        self.assertContains(response, f"There are no posts written by {author}")
+        response = self.client.get(reverse("blogger:view_blogger", args=(self.author,)))
+        self.assertContains(response, f"There are no posts written by {self.author}")
 
 
 class EditPostViewTest(TestCase):

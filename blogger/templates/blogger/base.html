@@ -15,7 +15,7 @@
         <div>
             <a href="{% url 'blogger:index' %}">Home</a>
             {% if user.is_authenticated %}
-            <a href="{% url 'blogger:add' %}">Add Post</a>
+            <a href="{% url 'blogger:add_post' %}">Add Post</a>
             {% endif %}
         </div>
         <h1>blogger</h1>

@@ -61,3 +61,14 @@ class CommentModelFormTest(TestCase):
         if form.is_valid():
             form.save(post, author)
         self.assertEqual(Comment.objects.count(), 1)
+
+    def test_empty_comment_is_not_saved(self):
+        user = User.objects.create(username="user", password="top_secret")
+        author = Author.objects.get(user=user)
+        post = Post.objects.create(title="title", content="content", author=author)
+        form = CommentModelForm({"comment_text": ""})
+        if form.is_valid():
+            form.save(post, author)
+        self.assertIn("comment_text", form.errors)
+        self.assertIn("This field is required.", form.errors["comment_text"])
+        self.assertEqual(Comment.objects.count(), 0)

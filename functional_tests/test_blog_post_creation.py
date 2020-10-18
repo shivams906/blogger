@@ -19,7 +19,7 @@ class BlogTest(FunctionalTest):
         # She is taken to the add post page
         wait_for(
             lambda: self.assertEqual(
-                f"{self.live_server_url}/blogger/add/", self.browser.current_url
+                f"{self.live_server_url}/blogger/posts/add/", self.browser.current_url
             )
         )
 

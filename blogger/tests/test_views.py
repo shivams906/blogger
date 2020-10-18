@@ -110,7 +110,7 @@ class AddPostViewTest(TestCase):
 
     def test_unauthenticated_users_are_redirected_to_login_page(self):
         response = self.client.get(reverse("blogger:add_post"))
-        self.assertRedirects(response, "/accounts/login/?next=/blogger/add/")
+        self.assertRedirects(response, "/accounts/login/?next=/blogger/posts/add/")
 
 
 class PostViewTest(TestCase):

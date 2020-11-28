@@ -7,3 +7,5 @@ db.sqlite3
 scss
 *.scss
 *.css.map
+.coverage
+htmlcov
